@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "501937449833",
+    "project_id": "pinkibbon-app",
+    "storage_bucket": "pinkibbon-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:501937449833:android:9e6bafe2a36130ec61ebf8",
+        "android_client_info": {
+          "package_name": "com.example.pink_ribbon"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbmo62MsjfNHr9zNX-cm_RMLF13FBD280"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
