@@ -1,5 +1,4 @@
 class CustomValidator {
-  static var pass;
   static String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'This field is required';
@@ -14,9 +13,19 @@ class CustomValidator {
     }
   }
 
-  static String? validateUsername(
-    String? value,
-  ) {
+  static String? validatePasswordConfirmation(String? value, String password) {
+    if (value == null || value.isEmpty) {
+      return 'This field is required';
+    }
+
+    if (value != password) {
+      return 'Passwords do not match';
+    }
+
+    return null;
+  }
+
+  static String? validateUsername(String? value) {
     if (value == null || value.isEmpty) {
       return 'This field is required';
     }

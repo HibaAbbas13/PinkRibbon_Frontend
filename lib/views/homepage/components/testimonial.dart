@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pink_ribbon/data/app_colors.dart';
 import 'package:pink_ribbon/data/typography.dart';
-import 'package:pink_ribbon/model/testimonial_model.dart';
+import 'package:pink_ribbon/model/Testimonial_model.dart';
+
 
 
 class TestimonialCard extends StatelessWidget {

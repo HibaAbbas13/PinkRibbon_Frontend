@@ -15,6 +15,10 @@ class AuthProvider with ChangeNotifier {
   String? get userId => _userId;
   Map<String, dynamic>? get userProfile => _userProfile;
 
+  AuthProvider() {
+    _loadUserProfileFromStorage();
+  }
+
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
@@ -25,9 +29,25 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> _loadUserProfileFromStorage() async {
+    _setLoading(true);
+    try {
+      final userProfileString = await _storage.read(key: 'user_profile');
+      if (userProfileString != null) {
+        _userProfile = jsonDecode(userProfileString);
+        notifyListeners();
+      }
+    } catch (error) {
+      _setErrorMessage(error.toString());
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   Future<void> signUp(String email, String password,
       String passwordConfirmation, String deviceToken) async {
-    final url = Uri.parse('http://172.21.144.1:1479/api/user/register');
+    final url = Uri.parse(
+        'https://pinkribbon-afb2f3b6e998.herokuapp.com/api/user/register');
 
     _setLoading(true);
     _setErrorMessage('');
@@ -63,7 +83,8 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> signIn(String email, String password) async {
-    final url = Uri.parse('http://172.21.144.1:1479/api/user/login');
+    final url = Uri.parse(
+        'https://pinkribbon-afb2f3b6e998.herokuapp.com/api/user/login');
 
     _setLoading(true);
     _setErrorMessage('');
@@ -84,6 +105,7 @@ class AuthProvider with ChangeNotifier {
         final token = responseData['token'];
         _userId = responseData['userId'];
         await _storage.write(key: 'auth_token', value: token);
+        await _storage.write(key: 'user_id', value: _userId);
         notifyListeners();
       } else {
         throw Exception('Failed to authenticate user');
@@ -97,7 +119,8 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> fetchUserProfile(String userId) async {
-    final url = Uri.parse('http://172.21.144.1:1479/api/user/$userId');
+    final url = Uri.parse(
+        'https://pinkribbon-afb2f3b6e998.herokuapp.com/api/user/$userId');
 
     _setLoading(true);
     _setErrorMessage('');
@@ -109,14 +132,20 @@ class AuthProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        _userProfile = jsonDecode(response.body);
-        notifyListeners();
+        final userProfile = jsonDecode(response.body);
+        if (userProfile != null) {
+          _userProfile = userProfile;
+          await _storage.write(
+              key: 'user_profile', value: jsonEncode(userProfile));
+          notifyListeners();
+        } else {
+          _setErrorMessage('User profile data is null');
+          throw Exception('User profile data is null');
+        }
       } else {
-        final responseData = jsonDecode(response.body);
-        _setErrorMessage(
-            responseData['message'] ?? 'Failed to fetch user profile');
-        throw Exception(
-            responseData['message'] ?? 'Failed to fetch user profile');
+        final errorMessage = response.body ?? 'Failed to fetch user profile';
+        _setErrorMessage(errorMessage);
+        throw Exception(errorMessage);
       }
     } catch (error) {
       _setErrorMessage(error.toString());
@@ -128,52 +157,34 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> updateUserProfile(
       String userId, Map<String, dynamic> userProfileData) async {
-    final url = Uri.parse('http://172.21.144.1:1479/api/user/update');
+    final url = Uri.parse(
+        'https://pinkribbon-afb2f3b6e998.herokuapp.com/api/user/update');
 
     _setLoading(true);
     _setErrorMessage('');
 
     try {
-      // Print request details for debugging
-      print('Request URL: $url');
-      print('Request Headers: ${{'Content-Type': 'application/json'}}');
-      print('Request Body: ${jsonEncode(userProfileData)}');
-
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(userProfileData),
       );
 
-      // Print response details for debugging
-      print('Response Status Code: ${response.statusCode}');
-      print('Response Body: ${response.body}');
-
       if (response.statusCode == 200) {
-        try {
-          final responseData = jsonDecode(response.body);
-          _userProfile = responseData;
-          notifyListeners();
-        } catch (jsonError) {
-          _setErrorMessage('Failed to parse JSON response');
-          throw Exception('Failed to parse JSON response');
-        }
+        final responseData = jsonDecode(response.body);
+        _userProfile = responseData;
+        await _storage.write(
+            key: 'user_profile', value: jsonEncode(responseData));
+        notifyListeners();
       } else {
-        // Check if response is JSON
         if (response.headers['content-type']?.contains('application/json') ==
             true) {
-          try {
-            final responseData = jsonDecode(response.body);
-            _setErrorMessage(
-                responseData['message'] ?? 'Failed to update profile');
-            throw Exception(
-                responseData['message'] ?? 'Failed to update profile');
-          } catch (jsonError) {
-            _setErrorMessage('Failed to parse error response');
-            throw Exception('Failed to parse error response');
-          }
+          final responseData = jsonDecode(response.body);
+          _setErrorMessage(
+              responseData['message'] ?? 'Failed to update profile');
+          throw Exception(
+              responseData['message'] ?? 'Failed to update profile');
         } else {
-          // Handle non-JSON error response
           _setErrorMessage('Server responded with non-JSON error');
           throw Exception(
               'Server responded with non-JSON error: ${response.body}');

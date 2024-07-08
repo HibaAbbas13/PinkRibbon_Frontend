@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pink_ribbon/data/app_colors.dart';
 import 'package:pink_ribbon/data/typography.dart';
+import 'package:pink_ribbon/views/Components/Customappbar.dart';
 import 'package:pink_ribbon/views/educationpage/components/bullets.dart';
-import 'package:pink_ribbon/views/widgets/custom_appbar.dart';
+import 'package:pink_ribbon/views/educationpage/components/headrow.dart';
 import 'package:pink_ribbon/views/educationpage/components/richtext.dart';
 
 class Stages extends StatefulWidget {
@@ -17,7 +18,9 @@ class _StagesState extends State<Stages> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: "Education"),
+      appBar: const CustomAppBar(
+        title: "Education",
+      ),
       body: SingleChildScrollView(
           child: Container(
         padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -39,30 +42,10 @@ class _StagesState extends State<Stages> {
             SizedBox(
               height: 45.h,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
-                  decoration: BoxDecoration(
-                    color: AppColors.kPrimary,
-                    borderRadius: BorderRadius.circular(30.r),
-                  ),
-                  child: Text(
-                    "Stages",
-                    style:
-                        AppTypography.kBold16.copyWith(color: AppColors.kWhite),
-                  ),
-                ),
-                InkWell(
-                    onTap: () {},
-                    child: Icon(
-                      Icons.share,
-                      color: AppColors.kPrimary,
-                    ))
-              ],
-            ),
+            educationHeadRow(
+                title: "Stages",
+                content:
+                    "Check out this information about Stages of Breast Cancer! \n\nhttps://pinkribbon.org.pk/stages-of-breast-cancer/"),
             SizedBox(height: 30.h),
             Text(
               "A stage is usually expressed as a number on a scale of 0 through IV — with stage 0 describing non-invasive cancers that remain within their original location and stage IV describing invasive cancers that have spread outside the breast to other parts of the body.",
@@ -169,7 +152,7 @@ class _StagesState extends State<Stages> {
                 "Cancer has spread to lymph nodes above or below the collarbone OR"),
             bullets(
                 "Cancer has spread to axillary lymph nodes or lymph nodes near the breastbone"),
-             SizedBox(height: 10.h),
+            SizedBox(height: 10.h),
             Text(
               "Stage IV",
               style:

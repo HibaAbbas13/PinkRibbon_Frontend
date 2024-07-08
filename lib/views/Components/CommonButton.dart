@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pink_ribbon/data/typography.dart';
 
-
 class CommomButton extends StatelessWidget {
   final String text;
   final Color color;

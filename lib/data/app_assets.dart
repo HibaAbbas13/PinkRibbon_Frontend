@@ -20,7 +20,7 @@ class AppAssets {
   static String kJazzcash = "assets/images/jazzcash.png";
 
   
-  static String splash = "assets/images/logo.png";
+   static String splash = "assets/images/logo.png";
   static String onboarding1 = "assets/images/on1.png";
   static String onboarding2 = "assets/images/on3.png";
   static String onboarding3 = "assets/images/on4.png";
@@ -28,6 +28,7 @@ class AppAssets {
   static String registraion = "assets/images/Registration.png";
   static String google = "assets/images/Google.png";
   static String fb = "assets/images/Facebook.png";
+  static String kFounder = "assets/images/founder.png";
 
  // svg
   static String kEducation = 'assets/icons/education.svg';

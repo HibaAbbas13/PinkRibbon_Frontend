@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:pink_ribbon/data/AppIcons.dart';
 import 'package:pink_ribbon/data/app_colors.dart';
+
+import 'package:pink_ribbon/views/Vedio_Page/Vediopage.dart';
 import 'package:pink_ribbon/views/donationPage/donation_page.dart';
 import 'package:pink_ribbon/views/educationpage/education_page.dart';
 import 'package:pink_ribbon/views/homepage/home_page.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:pink_ribbon/views/MoreView/more.dart';
 
 class LandingPage extends StatefulWidget {
-  const LandingPage({super.key});
+  const LandingPage({
+    super.key,
+  });
 
   @override
   State<LandingPage> createState() => _LandingPageState();
@@ -15,12 +23,25 @@ class _LandingPageState extends State<LandingPage> {
   int _currentIndex = 0;
   bool isSelected = false;
 
+  Future<void> launchWhatsApp({
+    required String phoneNumber,
+    required String message,
+  }) async {
+    final String url =
+        'https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   List<Widget> pages = [
-    const HomePage(token: null,),
+    const HomePage(),
     const EducationPage(),
     const DonationPage(),
-    Container(),
-    Container(),
+     VideoListScreen(),
+    const MorePage(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -33,22 +54,21 @@ class _LandingPageState extends State<LandingPage> {
             isSelected = !isSelected;
 
             setState(() {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => Container()));
+              launchWhatsApp(
+                phoneNumber:
+                    '+923338888335', // Replace with the phone number you want to message
+                message: 'Hello,PinkRibbon!',
+              );
             });
           },
           backgroundColor: AppColors.kFloatingGrey,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(100),
           ),
-          
-          
-          child: Icon(
-            Icons.message,
+          child: SvgPicture.asset(
+            AppIcons.whatsapp,
             color: AppColors.kPrimary,
-            size: 28,
-          )
-          ),
+          )),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         selectedItemColor: AppColors.kPrimary,
@@ -100,16 +120,16 @@ class _LandingPageState extends State<LandingPage> {
           ),
           BottomNavigationBarItem(
             activeIcon: Icon(
-              Icons.calendar_month,
+              Icons.video_collection_rounded,
               color: AppColors.kPrimary,
               size: 26,
             ),
             icon: Icon(
-              Icons.calendar_month_outlined,
+              Icons.video_collection_outlined,
               color: AppColors.kAppBarGrey,
               size: 26,
             ),
-            label: 'Calender',
+            label: 'Videos',
           ),
           BottomNavigationBarItem(
             activeIcon: Icon(

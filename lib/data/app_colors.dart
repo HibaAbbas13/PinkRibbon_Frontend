@@ -19,14 +19,18 @@ class AppColors {
   static Color kMasterStart = const Color(0x800080FF);
   static Color kMasterMid = const Color(0x805580FF);
   static Color kMasterEnd = const Color(0x80FF80FF);
-  static Color kEasyPaisaStart= const Color.fromARGB(128, 69, 207, 124);
-  static Color kEasyPaisaMid= const Color.fromARGB(128, 85, 207, 174);
-  static Color kEasyPaisaEnd= const Color.fromARGB(74, 36, 147, 159);
-  static Color kJazzCashStart= const Color.fromARGB(0, 139, 57, 55);
-  static Color kJazzCashMid= const Color.fromARGB(68, 235, 89, 82);
-  static Color kJazzCashEnd= const Color.fromARGB(19, 240, 217, 102);
-
-
+  static Color kEasyPaisaStart = const Color.fromARGB(128, 69, 207, 124);
+  static Color kEasyPaisaMid = const Color.fromARGB(128, 85, 207, 174);
+  static Color kEasyPaisaEnd = const Color.fromARGB(74, 36, 147, 159);
+  static Color kJazzCashStart = const Color.fromARGB(0, 139, 57, 55);
+  static Color kJazzCashMid = const Color.fromARGB(68, 235, 89, 82);
+  static Color kJazzCashEnd = const Color.fromARGB(19, 240, 217, 102);
+  static Color kRed = const Color(0xFFF83758);
+  static Color kGrey1 = const Color(0xFFA0A0A1);
+  static Color kGreyHint = const Color(0xFF676767);
+  static Color kGreyFilled = const Color(0xFFF3F3F3);
+  static Color kGreyback = const Color(0xFFF2F2F2);
+  static Color kGreySvg = const Color(0xFF626262);
   static const defaultOverlay = SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.dark,

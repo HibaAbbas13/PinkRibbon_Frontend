@@ -1,29 +1,78 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:pink_ribbon/data/app_colors.dart';
-import 'package:pink_ribbon/data/typography.dart';
-import 'package:pink_ribbon/views/Auth/ForgotPassword/Forgotpass.dart';
+import 'package:pink_ribbon/data/App_colors.dart';
+import 'package:pink_ribbon/data/Typography.dart';
+import 'package:pink_ribbon/providers/User_providers.dart';
 import 'package:pink_ribbon/views/profilePage/components/custom_text_field.dart';
 import 'package:pink_ribbon/views/profilePage/components/custom_text_form_field.dart';
+import 'package:provider/provider.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-   final _heightController = TextEditingController(); // Controller for height
-  final _weightController = TextEditingController(); // Controller for weight
+  final _storage = FlutterSecureStorage();
+  final _nameController = TextEditingController();
+  final _dobController = TextEditingController();
+  final _bloodgroupController = TextEditingController();
+  final _genderController = TextEditingController();
+  final _mobileController = TextEditingController();
+  final _surnameController = TextEditingController();
+  final _heightController = TextEditingController();
+  final _weightController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  File? _imageFile; 
-  double? _bmi; 
+  File? _imageFile;
+  double? _bmi;
+  String? _uploadedImageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadUserProfileFromProvider();
+    });
+  }
+
+  void _loadUserProfileFromProvider() {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    _setControllers(authProvider.userProfile);
+  }
+
+  Future<void> _fetchUserProfile() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    try {
+      await authProvider.fetchUserProfile(authProvider.userId ?? '');
+      _setControllers(authProvider.userProfile);
+    } catch (error) {
+      print('Error fetching user profile: $error');
+    }
+  }
+
+  void _setControllers(Map<String, dynamic>? userProfile) {
+    if (userProfile != null) {
+      setState(() {
+        _nameController.text = userProfile['name'] ?? '';
+        _surnameController.text = userProfile['surname'] ?? '';
+        _mobileController.text = userProfile['mobileNumber'] ?? '';
+        _genderController.text = userProfile['gender'] ?? '';
+        _bloodgroupController.text = userProfile['bloodGroup'] ?? '';
+        _dobController.text = userProfile['dob'] ?? '';
+        _bmi = userProfile['bmi'] as double?;
+        if (userProfile['profileImage'] != null) {
+          _imageFile = File(userProfile['profileImage']);
+        }
+      });
+    }
+  }
 
   Future<void> _getImageFromGallery(BuildContext context) async {
     final picker = ImagePicker();
@@ -50,30 +99,56 @@ class _ProfilePageState extends State<ProfilePage> {
       print('No image selected.');
     }
   }
-void _calculateBMI() {
-  double? heightFeet = double.tryParse(_heightController.text);
-  double? weight = double.tryParse(_weightController.text);
 
-  if (heightFeet != null && weight != null && heightFeet > 0 && weight > 0) {
-    // Convert height from feet to meters
-    // 1 foot = 0.3048 meters
-    double heightMeters = heightFeet * 0.3048;
+  void _calculateBMI() {
+    double? heightFeet = double.tryParse(_heightController.text);
+    double? weight = double.tryParse(_weightController.text);
 
-    // Calculate BMI using the formula
-    double bmi = weight / (heightMeters * heightMeters);
+    if (heightFeet != null && weight != null && heightFeet > 0 && weight > 0) {
+      double heightMeters = heightFeet * 0.3048;
 
-    // Update the state with the calculated BMI
-    setState(() {
-      _bmi = bmi;
-    });
+      double bmi = weight / (heightMeters * heightMeters);
+
+      setState(() {
+        _bmi = bmi;
+      });
+    }
   }
-}
+
+  Future<void> _updateUserProfile() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final userId = authProvider.userId;
+    if (userId != null) {
+      final userProfileData = {
+        'userId': userId,
+        'name': _nameController.text,
+        'surname': _surnameController.text,
+        'mobileNumber': _mobileController.text,
+        'gender': _genderController.text,
+        'bloodGroup': _bloodgroupController.text,
+        'dob': _dobController.text,
+        'bmi': _bmi,
+        'profileImage': _imageFile != null ? _imageFile!.path : null,
+      };
+
+      try {
+        await authProvider.updateUserProfile(userId, userProfileData);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Profile updated successfully')),
+        );
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update profile: $error')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.kWhite,
+        backgroundColor: AppColors.kBackgroundPink2,
         leading: InkWell(
           onTap: () {
             Navigator.pop(context);
@@ -81,7 +156,7 @@ void _calculateBMI() {
           child: Icon(
             Icons.arrow_back_ios_new,
             size: 28,
-            color: AppColors.kAppBarGrey,
+            color: AppColors.kBlack,
           ),
         ),
         centerTitle: true,
@@ -91,16 +166,16 @@ void _calculateBMI() {
         ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(24.h),
+        // padding: EdgeInsets.all(24.h),
         child: Container(
-          
+          padding: EdgeInsets.all(24.h),
           width: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
                 AppColors.kBackgroundPink1.withOpacity(0.4),
                 AppColors.kBackgroundPink2.withOpacity(0.5),
-                AppColors.kBackgroundPink1.withOpacity(0.4),
+                AppColors.kWhite,
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -121,7 +196,8 @@ void _calculateBMI() {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: AppColors.kPrimary,
-                          border: Border.all(color: AppColors.kWhite, width: 3.w),
+                          border:
+                              Border.all(color: AppColors.kWhite, width: 3.w),
                         ),
                         child: _imageFile != null
                             ? CircleAvatar(
@@ -144,7 +220,8 @@ void _calculateBMI() {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: AppColors.kPrimary,
-                          border: Border.all(color: AppColors.kWhite, width: 3.w),
+                          border:
+                              Border.all(color: AppColors.kWhite, width: 3.w),
                         ),
                         child: Icon(
                           Icons.edit_outlined,
@@ -161,7 +238,8 @@ void _calculateBMI() {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Personal Details',
-                  style: AppTypography.kSemiBold18.copyWith(color: AppColors.kBlack),
+                  style: AppTypography.kSemiBold18
+                      .copyWith(color: AppColors.kBlack),
                 ),
               ),
               SizedBox(height: 20.h),
@@ -170,67 +248,59 @@ void _calculateBMI() {
                 child: Column(
                   children: [
                     ProfileTextFormField(
-                      controller: _emailController,
-                      label: 'Email Address',
+                      controller: _nameController,
+                      label: 'name',
                     ),
                     SizedBox(height: 28.h),
                     ProfileTextFormField(
-                      isPassword: true,
-                      controller: _passwordController,
-                      label: 'Password',
-                    ),
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ForgotPass(),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          'Change Password',
-                          style: AppTypography.kLight12.copyWith(
-                            color: AppColors.kPrimary,
-                            decoration: TextDecoration.underline,
-                            decorationColor: AppColors.kPrimary
-                          ),
-                        ),
-                      ),
-                    ),
-                    
-                    SizedBox(height: 8.h),
-                    const ProfileTextField(
-                      label: 'Name',
+                      label: 'surname',
+                      controller: _surnameController,
                     ),
                     SizedBox(height: 28.h),
-                    const ProfileTextField(
+                    ProfileTextFormField(
+                      controller: _mobileController,
                       label: 'Mobile',
                     ),
                     SizedBox(height: 28.h),
-                    const ProfileTextField(
-                      label: 'Gender',
-                    ),
+
+                    ProfileTextFormField(
+                        label: 'Gender', controller: _genderController),
                     SizedBox(height: 24.h),
-          
-          
-             
-                    const ProfileTextField(
+
+                    ProfileTextFormField(
+                      controller: _bloodgroupController,
                       label: 'Blood Group',
                     ),
                     SizedBox(height: 28.h),
-                    const ProfileTextField(
+                    ProfileTextFormField(
                       label: 'Date of Birth',
+                      controller: _dobController,
                     ),
-                    SizedBox(height: 34.h),
+
+                    SizedBox(height: 24.h),
+                    Divider(
+                      thickness: 1,
+                      color: AppColors.kAppBarGrey,
+                    ),
+                    SizedBox(height: 24.h),
+                    ProfileTextFormField(
+                      controller: _heightController,
+                      label: 'Height (ft)',
+                    ),
+                    SizedBox(height: 24.h),
+
+                    // Text field for weight
+                    ProfileTextFormField(
+                      controller: _weightController,
+                      label: 'Weight (kg)',
+                    ),
+                    SizedBox(height: 28.h),
+
+                    // Button to calculate BMI
                     InkWell(
-                      onTap: () {
-                        {
-                          if (_formKey.currentState!.validate()) {}
-                        }
-                      },
+                      onTap:
+                          // Call function to calculate BMI
+                          _calculateBMI,
                       child: Container(
                         alignment: Alignment.center,
                         padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -240,63 +310,40 @@ void _calculateBMI() {
                           borderRadius: BorderRadius.circular(10.r),
                         ),
                         child: Text(
-                          "Update",
+                          "Calculate BMI",
                           style: AppTypography.kBold18.copyWith(
                             color: AppColors.kWhite,
-                            
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(height: 24.h),
-                     Divider(
-                      thickness: 1,
-                      color: AppColors.kAppBarGrey,
+                    SizedBox(height: 34.h),
+                    // Display calculated BMI
+                    if (_bmi != null)
+                      Text(
+                        'BMI: ${_bmi?.toStringAsFixed(2)}',
+                        style: TextStyle(fontSize: 18),
+                      ),
+
+                    SizedBox(height: 34.h),
+                    InkWell(
+                      onTap: _updateUserProfile,
+                      child: Container(
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.symmetric(vertical: 10.h),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: AppColors.kPrimary,
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: Text(
+                          "Save",
+                          style: AppTypography.kBold18.copyWith(
+                            color: AppColors.kWhite,
+                          ),
+                        ),
+                      ),
                     ),
-                    SizedBox(height: 24.h),
-                    ProfileTextFormField(
-                controller: _heightController,
-                label: 'Height (cm)',
-              ),
-              SizedBox(height: 24.h),
-          
-              // Text field for weight
-              ProfileTextFormField(
-                controller: _weightController,
-                label: 'Weight (kg)',
-              ),
-              SizedBox(height: 28.h),
-          
-              // Button to calculate BMI
-              InkWell(
-                onTap: () {
-                  // Call function to calculate BMI
-                  _calculateBMI();
-                },
-                child: Container(
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(vertical: 10.h),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: AppColors.kPrimary,
-                    borderRadius: BorderRadius.circular(10.r),
-                  ),
-                  child: Text(
-                    "Calculate BMI",
-                    style: AppTypography.kBold18.copyWith(
-                      color: AppColors.kWhite,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 28.h),
-          
-              // Display calculated BMI
-              if (_bmi != null)
-                Text(
-                  'BMI: ${_bmi?.toStringAsFixed(2)}',
-                  style: const TextStyle(fontSize: 18),
-                ),
                     SizedBox(height: 57.h),
                   ],
                 ),
@@ -308,155 +355,3 @@ void _calculateBMI() {
     );
   }
 }
-
-// import 'dart:io';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
-// import 'package:image_picker/image_picker.dart';
-// import 'package:pink_ribbon/data/app_colors.dart';
-// import 'package:pink_ribbon/data/typography.dart';
-// import 'package:pink_ribbon/views/Auth/ForgotPassword/Forgotpass.dart';
-// import 'package:pink_ribbon/views/profilePage/components/custom_text_field.dart';
-// import 'package:pink_ribbon/views/profilePage/components/custom_text_form_field.dart';
-
-// class ProfilePage extends StatefulWidget {
-//   const ProfilePage({super.key});
-
-//   @override
-//   State<ProfilePage> createState() => _ProfilePageState();
-// }
-
-// class _ProfilePageState extends State<ProfilePage> {
-//   final _emailController = TextEditingController();
-//   final _passwordController = TextEditingController();
-//   final _heightController = TextEditingController(); // Controller for height
-//   final _weightController = TextEditingController(); // Controller for weight
-//   final _formKey = GlobalKey<FormState>();
-//   File? _imageFile; // Change the type to File?
-//   double? _bmi; // Variable to store BMI value
-
-//   Future<void> _getImageFromGallery(BuildContext context) async {
-//     final picker = ImagePicker();
-//     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-//     if (pickedFile != null) {
-//       setState(() {
-//         _imageFile = File(pickedFile.path); // Convert XFile to File
-//       });
-
-//       showDialog(
-//         context: context,
-//         builder: (BuildContext context) {
-//           return AlertDialog(
-//             content: CircleAvatar(
-//               radius: 50, // adjust the size as needed
-//               backgroundImage: FileImage(_imageFile!),
-//             ),
-//           );
-//         },
-//       );
-//     } else {
-//       // User canceled the picker
-//       print('No image selected.');
-//     }
-//   }
-
-//   // Function to calculate BMI
-//   void _calculateBMI() {
-//     double? height = double.tryParse(_heightController.text);
-//     double? weight = double.tryParse(_weightController.text);
-
-//     if (height != null && weight != null && height > 0 && weight > 0) {
-//       // Convert height to meters (if not already in meters)
-//       // Assuming height entered in centimeters, converting to meters
-//       double heightInMeters = height / 100;
-
-//       // Calculate BMI using the formula
-//       double bmi = weight / (heightInMeters * heightInMeters);
-
-//       // Update the state with the calculated BMI
-//       setState(() {
-//         _bmi = bmi;
-//       });
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         backgroundColor: AppColors.kWhite,
-//         leading: InkWell(
-//           onTap: () {
-//             Navigator.pop(context);
-//           },
-//           child: Icon(
-//             Icons.arrow_back_ios_new,
-//             size: 28,
-//             color: AppColors.kAppBarGrey,
-//           ),
-//         ),
-//         centerTitle: true,
-//         title: Text(
-//           "Profile",
-//           style: AppTypography.kSemiBold18.copyWith(color: AppColors.kPrimary),
-//         ),
-//       ),
-//       body: SingleChildScrollView(
-//         padding: EdgeInsets.all(24.h),
-//         child: Column(
-//           children: [
-//             // Existing UI code
-
-//             // Text field for height
-//             ProfileTextFormField(
-//               controller: _heightController,
-//               label: 'Height (cm)',
-//             ),
-//             SizedBox(height: 24.h),
-
-//             // Text field for weight
-//             ProfileTextFormField(
-//               controller: _weightController,
-//               label: 'Weight (kg)',
-//             ),
-//             SizedBox(height: 28.h),
-
-//             // Button to calculate BMI
-//             InkWell(
-//               onTap: () {
-//                 // Call function to calculate BMI
-//                 _calculateBMI();
-//               },
-//               child: Container(
-//                 alignment: Alignment.center,
-//                 padding: EdgeInsets.symmetric(vertical: 10.h),
-//                 width: double.infinity,
-//                 decoration: BoxDecoration(
-//                   color: AppColors.kPrimary,
-//                   borderRadius: BorderRadius.circular(10.r),
-//                 ),
-//                 child: Text(
-//                   "Calculate BMI",
-//                   style: AppTypography.kBold18.copyWith(
-//                     color: AppColors.kWhite,
-//                   ),
-//                 ),
-//               ),
-//             ),
-//             SizedBox(height: 28.h),
-
-//             // Display calculated BMI
-//             if (_bmi != null)
-//               Text(
-//                 'BMI: ${_bmi?.toStringAsFixed(2)}',
-//                 style: TextStyle(fontSize: 18),
-//               ),
-
-//             // Existing UI code
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

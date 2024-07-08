@@ -1,22 +1,21 @@
-import 'dart:convert';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:http/http.dart' as http;
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:pink_ribbon/providers/User_providers.dart' as custom;
 import 'package:pink_ribbon/views/Auth/Components/Authfield.dart';
 import 'package:pink_ribbon/views/Auth/ForgotPassword/Forgotpass.dart';
 import 'package:pink_ribbon/views/Auth/SignUpScreen.dart';
 import 'package:pink_ribbon/views/Components/CommonButton.dart';
-import 'package:pink_ribbon/views/homepage/home_page.dart';
+import 'package:pink_ribbon/views/landingpage/landing_page.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../data/app_assets.dart';
 import '../../data/app_colors.dart';
 import '../../data/typography.dart';
-import '../config.dart';
-
 
 class LoginScreen extends StatefulWidget {
+  static const routeName = '/signin';
   const LoginScreen({super.key});
 
   @override
@@ -24,20 +23,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  @override
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  final TextEditingController emailController = TextEditingController();
-
-  final TextEditingController passwordController = TextEditingController();
-
-  final bool _isNotValidate = false;
-
   late SharedPreferences prefs;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     initSharedPref();
   }
@@ -46,174 +38,175 @@ class _LoginScreenState extends State<LoginScreen> {
     prefs = await SharedPreferences.getInstance();
   }
 
-  void enter_login() {
-    if (_formKey.currentState!.validate()) {
-      (context) => const ForgotPass();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  void _submit() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    try {
+      await Provider.of<custom.AuthProvider>(context, listen: false).signIn(
+        _emailController.text,
+        _passwordController.text,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Login successful!'),
+      ));
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LandingPage()),
+      );
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(error.toString()),
+      ));
     }
   }
 
-  void loginUser() async {
-    if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
-      var reqBody = {
-        "email": emailController.text,
-        "password": passwordController.text
-      };
-      var response = await http.post(Uri.parse(login),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode(reqBody));
-      var jsonResponse = jsonDecode(response.body);
-      if (jsonResponse['status']) {
-        var myToken = jsonResponse['token'];
-        prefs.setString('token', myToken);
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => HomePage(token: myToken)));
-      } else {
-        print('Something went wrong');
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        return;
       }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      if (userCredential.user != null) {
+        // Navigate to the LandingPage without replacing the current screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const LandingPage()),
+        );
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.kBackgroundPink2,
       body: SingleChildScrollView(
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(29.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Welcome\nBack!",
+        child: Container(
+          padding: const EdgeInsets.all(29.0),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.kBackgroundPink1.withOpacity(0.4),
+                AppColors.kBackgroundPink2.withOpacity(0.5),
+                AppColors.kWhite,
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 50.h,
+              ),
+              Text("Welcome\nBack!",
                   style: AppTypography.kExtraBold24
-                      .copyWith(color: AppColors.kBlack),
-                ),
-                SizedBox(
-                  height: 57.h,
-                ),
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      AuthField(
-                        controller: emailController,
+                      .copyWith(color: AppColors.kBlack)),
+              SizedBox(height: 57.h),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    AuthField(
+                        controller: _emailController,
                         hintText: 'Username or Email',
-                        icon: '',
-                      ),
-                      SizedBox(height: 31.h),
-                      AuthField(
-                        controller: passwordController,
+                        icon: Icons.mail),
+                    SizedBox(height: 31.h),
+                    AuthField(
+                        controller: _passwordController,
                         isPassword: true,
                         hintText: 'Password',
-                        icon: '',
-                      ),
-                    ],
-                  ),
+                        icon: Icons.lock),
+                  ],
                 ),
-                SizedBox(
-                  height: 10.h,
+              ),
+              SizedBox(height: 10.h),
+              Align(
+                alignment: Alignment.centerRight,
+                child: InkWell(
+                  child: Text("Forget Password?",
+                      style: AppTypography.kExtraLight12
+                          .copyWith(color: Colors.redAccent)),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              const ForgotPass()),
+                    );
+                  },
                 ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: InkWell(
-                      child: Text("Forget Password?",
-                          style: AppTypography.kExtraLight12
-                              .copyWith(color: Colors.red)),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    const ForgotPass()));
-                      }),
-                ),
-                SizedBox(
-                  height: 52.h,
-                ),
-                CommomButton(
+              ),
+              SizedBox(height: 52.h),
+              CommomButton(
                   text: "Login ",
                   color: AppColors.kPrimary,
                   color2: AppColors.kWhite,
-                  border: Border.all(width: 1),
-                  onTap: () {
-                    //    enter_login();
-                    const LoginScreen();
-                  },
-                ),
-                SizedBox(
-                  height: 75.h,
-                ),
-                Center(
-                  child: Text(
-                    "-or Continue With-",
+                  border: Border.all(color: AppColors.kPrimary, width: 1),
+                  onTap: _submit),
+              SizedBox(height: 75.h),
+              Center(
+                child: Text("-or Continue With-",
                     style: AppTypography.kExtraLight12
-                        .copyWith(color: AppColors.kBlack),
-                  ),
-                ),
-                SizedBox(
-                  height: 20.h,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 54,
-                      width: 54,
-                      decoration: BoxDecoration(
+                        .copyWith(color: AppColors.kBlack)),
+              ),
+              SizedBox(height: 20.h),
+              Center(
+                child: InkWell(
+                  onTap: signInWithGoogle,
+                  child: Container(
+                    height: 54,
+                    width: 54,
+                    decoration: BoxDecoration(
                         image: DecorationImage(
                             image: AssetImage(AppAssets.google)),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 5.w,
-                    ),
-                    Container(
-                      height: 54,
-                      width: 54,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image:
-                              DecorationImage(image: AssetImage(AppAssets.fb))),
-                    )
-                  ],
+                        shape: BoxShape.circle),
+                  ),
                 ),
-                SizedBox(
-                  height: 28.h,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Create and Account",
+              ),
+              SizedBox(height: 28.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Create and Account",
                       style: AppTypography.kLight14
-                          .copyWith(color: AppColors.kBlack),
-                    ),
-                    SizedBox(
-                      width: 5.w,
-                    ),
-                    InkWell(
-                      child: Text(
-                        "Sign Up",
+                          .copyWith(color: AppColors.kBlack)),
+                  SizedBox(width: 5.w),
+                  InkWell(
+                    onTap: () {
+                      // so jaaaaaaaaaaaaaaaaaa
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  const SignUpScreen()));
+                    },
+                    child: Text("Sign Up",
                         style: AppTypography.kSemiBold14.copyWith(
-                            color: AppColors.kPrimary,
-                            decoration: TextDecoration.underline),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    const SignUpScreen()));
-                      },
-                    ),
-                  ],
-                )
-              ],
-            ),
+                          color: AppColors.kPrimary,
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppColors.kPrimary,
+                        )),
+                  )
+                ],
+              )
+            ],
           ),
         ),
       ),

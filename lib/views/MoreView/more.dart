@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pink_ribbon/data/AppIcons.dart';
-
+import 'package:pink_ribbon/data/app_assets.dart';
 import 'package:pink_ribbon/data/app_colors.dart';
 import 'package:pink_ribbon/data/typography.dart';
+import 'package:pink_ribbon/views/Auth/LoginScreen.dart';
+import 'package:pink_ribbon/views/Components/Customappbar.dart';
 import 'package:pink_ribbon/views/MoreView/components/about_us.dart';
 import 'package:pink_ribbon/views/MoreView/components/founder_page.dart';
-import 'package:pink_ribbon/views/profilePage/profile_view.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 
-import '../../data/app_assets.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 
 class MorePage extends StatelessWidget {
   const MorePage({super.key});
@@ -18,44 +18,9 @@ class MorePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.kWhite,
-        centerTitle: true,
-        title: Text("More",
-            style:
-                AppTypography.kSemiBold18.copyWith(color: AppColors.kPrimary)),
-        actions: [
-          InkWell(
-            onTap: () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //       builder: (context) => const NotificationPage(),
-              //     ));
-            },
-            child: Icon(
-              Icons.notifications_none_rounded,
-              size: 28,
-              color: AppColors.kAppBarGrey,
-            ),
-          ),
-          InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ProfilePage(),
-                    ));
-              },
-              child: Padding(
-                padding: EdgeInsets.only(right: 16.w, left: 8.w),
-                child: Icon(
-                  Icons.account_circle_outlined,
-                  size: 28,
-                  color: AppColors.kAppBarGrey,
-                ),
-              )),
-        ],
+      appBar: CustomAppBar(
+        title: 'More',
+        main: true,
       ),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 40.0.w, vertical: 70.h),
@@ -79,7 +44,7 @@ class MorePage extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => AboutUsPage(
-                        image: AppIcons.kVision,
+                        image: AppIcons.kAboutUs,
                         title: 'About Us',
                         description:
                             'Pink Ribbon Pakistan is a non-funded, self-sustained and the only organization in the country which is dedicatedly working on the issue of breast cancer with nationwide outreach since 2004.We strive to significantly reduce breast cancer mortality in the country by creating widespread awareness through community engagement on prevention, early detection and increased access to treatment.Our scope of work is holistic from strategic interventions to public awareness including patient-aid and service delivery.To provide relief to poor people, we are setting up a dedicated Breast Cancer Hospital where deserving patients will get free of cost treatment under one roof.',
@@ -90,7 +55,7 @@ class MorePage extends StatelessWidget {
               dense: true,
               minLeadingWidth: 1,
               leading: SvgPicture.asset(
-                AppIcons.kVision,
+                AppIcons.kAboutUs,
                 height: 26.h,
                 width: 26.w,
                 color: AppColors.kPrimary,
@@ -134,7 +99,7 @@ class MorePage extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => AboutUsPage(
-                        image: AppIcons.kVision,
+                        image: AppIcons.kMission,
                         title: 'Mission',
                         description:
                             'Our mission is to prevent and cure breast cancer by creating widespread awareness through community engagement on prevention, early detection and increased access to treatment.',
@@ -145,7 +110,7 @@ class MorePage extends StatelessWidget {
               dense: true,
               minLeadingWidth: 1,
               leading: SvgPicture.asset(
-                AppIcons.kVision,
+                AppIcons.kMission,
                 height: 26.h,
                 width: 26.w,
                 color: AppColors.kPrimary,
@@ -187,42 +152,42 @@ class MorePage extends StatelessWidget {
                     AppTypography.kLight12.copyWith(color: AppColors.kPrimary),
               ),
             ),
-            SizedBox(
-              height: 12.h,
-            ),
-            ListTile(
-              onTap: () {},
-              contentPadding: EdgeInsets.zero,
-              dense: true,
-              minLeadingWidth: 1,
-              leading: Icon(
-                Icons.translate_sharp,
-                color: AppColors.kPrimary,
-              ),
-              title: Text(
-                'Language',
-                style:
-                    AppTypography.kLight12.copyWith(color: AppColors.kPrimary),
-              ),
-              trailing: ToggleSwitch(
-                minWidth: 60.0.w,
-                cornerRadius: 20.r,
-                activeBgColors: [
-                  [AppColors.kPrimary],
-                  [AppColors.kPrimary]
-                ],
-                activeFgColor: Colors.white,
-                inactiveBgColor: AppColors.kAppBarGrey,
-                inactiveFgColor: Colors.white,
-                initialLabelIndex: 1,
-                totalSwitches: 2,
-                labels: const ['Eng', 'اردو'],
-                radiusStyle: true,
-                onToggle: (index) {
-                  print('switched to: $index');
-                },
-              ),
-            ),
+            // SizedBox(
+            //   height: 12.h,
+            // ),
+            // ListTile(
+            //   onTap: () {},
+            //   contentPadding: EdgeInsets.zero,
+            //   dense: true,
+            //   minLeadingWidth: 1,
+            //   leading: Icon(
+            //     Icons.translate_sharp,
+            //     color: AppColors.kPrimary,
+            //   ),
+            //   title: Text(
+            //     'Language',
+            //     style:
+            //         AppTypography.kLight12.copyWith(color: AppColors.kPrimary),
+            //   ),
+            //   trailing: ToggleSwitch(
+            //     minWidth: 60.0.w,
+            //     cornerRadius: 20.r,
+            //     activeBgColors: [
+            //       [AppColors.kPrimary],
+            //       [AppColors.kPrimary]
+            //     ],
+            //     activeFgColor: Colors.white,
+            //     inactiveBgColor: AppColors.kAppBarGrey,
+            //     inactiveFgColor: Colors.white,
+            //     initialLabelIndex: 1,
+            //     totalSwitches: 2,
+            //     labels: const ['Eng', 'اردو'],
+            //     radiusStyle: true,
+            //     onToggle: (index) {
+            //       print('switched to: $index');
+            //     },
+            //   ),
+            // ),
             SizedBox(
               height: 12.h,
             ),
@@ -257,7 +222,12 @@ class MorePage extends StatelessWidget {
                           width: 4.w,
                         ),
                         InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => LoginScreen()));
+                          },
                           child: Container(
                             padding: EdgeInsets.all(8.h),
                             decoration: BoxDecoration(

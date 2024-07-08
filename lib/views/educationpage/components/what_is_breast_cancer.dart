@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pink_ribbon/data/app_colors.dart';
 import 'package:pink_ribbon/data/typography.dart';
-import 'package:pink_ribbon/views/widgets/custom_appbar.dart';
+import 'package:pink_ribbon/views/Components/Customappbar.dart';
+import 'package:pink_ribbon/views/educationpage/components/headrow.dart';
+
 
 class BreastCancer extends StatefulWidget {
+ 
   const BreastCancer({super.key});
 
   @override
@@ -14,8 +17,9 @@ class BreastCancer extends StatefulWidget {
 class _BreastCancerState extends State<BreastCancer> {
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      appBar: const CustomAppBar(title: "Education",),
+      appBar: const CustomAppBar(title: "Education", ),
       
       body: SingleChildScrollView(
           child: Container(
@@ -38,30 +42,7 @@ class _BreastCancerState extends State<BreastCancer> {
             SizedBox(
               height: 45.h,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
-                  decoration: BoxDecoration(
-                    color: AppColors.kPrimary,
-                    borderRadius: BorderRadius.circular(30.r),
-                  ),
-                  child: Text(
-                    "What is Breast Cancer",
-                    style:
-                        AppTypography.kBold16.copyWith(color: AppColors.kWhite),
-                  ),
-                ),
-                InkWell(
-                    onTap: () {},
-                    child: Icon(
-                      Icons.share,
-                      color: AppColors.kPrimary,
-                    ))
-              ],
-            ),
+            educationHeadRow(title: "What is Breast Cancer", content: "Check out this information about What is Breast Cancer! \n\nhttps://pinkribbon.org.pk/what-is-breast-cancer/"),
             SizedBox(height: 30.h),
             Text(
               "Cells in the body normally divides at a steady and even pace. Human body continuously forms New cells to take the place of old and injured cells. Sometimes, however, when cells divide and multiply rapidly, they form a lump also called a tumour. Nearly 80% of finding on a mammogram are not cancer. They are usually benign tumours, a cyst or some other non-cancerous condition. A tumour is called cancer only when it starts invading nearby tissues and organs and damage them.",
@@ -129,4 +110,6 @@ class _BreastCancerState extends State<BreastCancer> {
       )),
     );
   }
+
+  
 }

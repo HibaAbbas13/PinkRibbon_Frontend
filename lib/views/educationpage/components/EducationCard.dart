@@ -21,14 +21,25 @@ class EducationCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(30.r),
               border:
                   Border.all(color: AppColors.kBackgroundPink2, width: 1.w)),
-          child: Text(
-            educationItem.description,
-            style: AppTypography.kLight14.copyWith(
-              height: 1.5, 
-              
-            ),
-             textAlign: TextAlign.justify,
+          child: Column(
+            children: [
+              Text(
+                educationItem.description,
+                style: AppTypography.kLight14.copyWith(
+                  height: 1.5, 
+                  
+                ),
+                 textAlign: TextAlign.justify,
+              ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Text("Read More",
+                style: AppTypography.kLight10.copyWith(color: AppColors.kPrimary),
+                ),
+              )
+            ],
           ),
+          
         ),
         Positioned(
           left: 25.w,

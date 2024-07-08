@@ -7,10 +7,11 @@ import 'package:pink_ribbon/data/typography.dart';
 class ProfileTextField extends StatefulWidget {
   final String label;
   final bool isDropdown;
+   final TextEditingController controller;
   const ProfileTextField({
     super.key,
     this.isDropdown = false,
-    required this.label,
+    required this.label, required this.controller,
   });
 
   @override

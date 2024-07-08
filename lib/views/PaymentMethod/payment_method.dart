@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pink_ribbon/data/app_colors.dart';
 import 'package:pink_ribbon/data/typography.dart';
-import 'package:pink_ribbon/model/payment_model.dart';
+import 'package:pink_ribbon/model/Payment_model.dart';
+import 'package:pink_ribbon/views/Components/Customappbar.dart';
+
 import 'package:pink_ribbon/views/PaymentMethod/components/payment_card.dart';
-import 'package:pink_ribbon/views/widgets/custom_appbar.dart';
 
 class PaymentMethods extends StatefulWidget {
   const PaymentMethods({super.key});
@@ -17,7 +18,9 @@ class _PaymentMethodsState extends State<PaymentMethods> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Donate'),
+      appBar: const CustomAppBar(
+        title: 'Donate',
+      ),
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.all(
@@ -43,7 +46,6 @@ class _PaymentMethodsState extends State<PaymentMethods> {
                 style: AppTypography.kLight14
                     .copyWith(color: AppColors.kAppBarPink),
               ),
-
               SizedBox(
                 height: 40.h,
               ),
@@ -60,7 +62,6 @@ class _PaymentMethodsState extends State<PaymentMethods> {
                   );
                 },
               )
-             
             ],
           ),
         ),

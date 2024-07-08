@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pink_ribbon/data/app_colors.dart';
 import 'package:pink_ribbon/data/typography.dart';
-import 'package:pink_ribbon/views/widgets/custom_appbar.dart';
+import 'package:pink_ribbon/views/Components/Customappbar.dart';
+import 'package:pink_ribbon/views/educationpage/components/headrow.dart';
 import 'package:pink_ribbon/views/educationpage/components/syptoms_bullets.dart';
 
 class EarlyDetection extends StatefulWidget {
@@ -38,30 +39,10 @@ class _EarlyDetectionState extends State<EarlyDetection> {
             SizedBox(
               height: 45.h,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
-                  decoration: BoxDecoration(
-                    color: AppColors.kPrimary,
-                    borderRadius: BorderRadius.circular(30.r),
-                  ),
-                  child: Text(
-                    "Early Detection",
-                    style:
-                        AppTypography.kBold16.copyWith(color: AppColors.kWhite),
-                  ),
-                ),
-                InkWell(
-                    onTap: () {},
-                    child: Icon(
-                      Icons.share,
-                      color: AppColors.kPrimary,
-                    ))
-              ],
-            ),
+            educationHeadRow(
+                title: "Early Detection",
+                content:
+                    "Check out this information about Early Detection of Breast Cancer! \n\nhttps://pinkribbon.org.pk/early-detection-techniques/"),
             SizedBox(height: 30.h),
             Text(
               "Ultrasound",
@@ -152,7 +133,6 @@ class _EarlyDetectionState extends State<EarlyDetection> {
                 "For some people, talking to others who are in a similar situation can help to decrease feelings of anxiety, isolation or fear. You may want to consider meeting face to face with people in a similar situation",
                 "Regular physical activity has many health benefits, but it can also help improve your mood and reduce anxiety and depression",
                 "Eating a healthy diet and getting enough sleep may also help you cope better with stress",
-                
               ],
             ),
             SizedBox(height: 50.h),

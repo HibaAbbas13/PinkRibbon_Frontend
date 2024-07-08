@@ -2,17 +2,20 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:pink_ribbon/data/app_assets.dart';
 import 'package:pink_ribbon/data/app_colors.dart';
 import 'package:pink_ribbon/data/typography.dart';
-import 'package:pink_ribbon/model/testimonial_model.dart';
+import 'package:pink_ribbon/model/Testimonial_model.dart';
+
+import 'package:pink_ribbon/views/Notifications/NotificationScreen.dart';
 import 'package:pink_ribbon/views/homepage/components/banner_card.dart';
 import 'package:pink_ribbon/views/homepage/components/testimonial.dart';
 import 'package:pink_ribbon/views/profilePage/profile_view.dart';
-
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required token});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -27,7 +30,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        
         backgroundColor: AppColors.kWhite,
         automaticallyImplyLeading: false,
         centerTitle: true,
@@ -40,11 +42,11 @@ class _HomePageState extends State<HomePage> {
         actions: [
           InkWell(
             onTap: () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //       builder: (context) => const NotificationPage(),
-              //     ));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NotificationScreen(),
+                  ));
             },
             child: Icon(
               Icons.notifications_none_rounded,
@@ -54,12 +56,12 @@ class _HomePageState extends State<HomePage> {
           ),
           InkWell(
               onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProfilePage(),
-                  ));
-            },
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProfilePage(),
+                    ));
+              },
               child: Padding(
                 padding: EdgeInsets.only(right: 16.w, left: 8.w),
                 child: Icon(
@@ -74,59 +76,59 @@ class _HomePageState extends State<HomePage> {
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              AppColors.kBackgroundPink1.withOpacity(0.4),
-              AppColors.kBackgroundPink2.withOpacity(0.5),
-              AppColors.kWhite,
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            gradient: LinearGradient(
+              colors: [
+                AppColors.kBackgroundPink1.withOpacity(0.4),
+                AppColors.kBackgroundPink2.withOpacity(0.5),
+                AppColors.kWhite,
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
           ),
-        ),
           child: Column(
             children: [
               SizedBox(
                 height: 55.h,
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 22.0.w),
-                child: Card(
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0.r),
-                  ),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.zero,
-                      filled: true,
-                      fillColor: AppColors.kWhite,
-                      hintText: 'Search',
-                      hintStyle: AppTypography.kSemiBold14
-                          .copyWith(color: AppColors.kPrimary),
-                      prefixIcon: Padding(
-                        padding: EdgeInsets.only(left: 8.0.w),
-                        child: Icon(
-                          Icons.search,
-                          color: AppColors.kPrimary,
-                          size: 26,
-                        ),
-                      ),
-                      border: InputBorder.none,
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.r),
-                          borderSide: BorderSide.none),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.r),
-                          borderSide: BorderSide.none),
-                      disabledBorder: const OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 35.h,
-              ),
+              // Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: 22.0.w),
+              //   child: Card(
+              //     elevation: 3,
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(30.0.r),
+              //     ),
+              //     child: TextField(
+              //       decoration: InputDecoration(
+              //         contentPadding: EdgeInsets.zero,
+              //         filled: true,
+              //         fillColor: AppColors.kWhite,
+              //         hintText: 'Search',
+              //         hintStyle: AppTypography.kSemiBold14
+              //             .copyWith(color: AppColors.kPrimary),
+              //         prefixIcon: Padding(
+              //           padding: EdgeInsets.only(left: 8.0.w),
+              //           child: Icon(
+              //             Icons.search,
+              //             color: AppColors.kPrimary,
+              //             size: 26,
+              //           ),
+              //         ),
+              //         border: InputBorder.none,
+              //         focusedBorder: OutlineInputBorder(
+              //             borderRadius: BorderRadius.circular(30.r),
+              //             borderSide: BorderSide.none),
+              //         enabledBorder: OutlineInputBorder(
+              //             borderRadius: BorderRadius.circular(30.r),
+              //             borderSide: BorderSide.none),
+              //         disabledBorder: const OutlineInputBorder(),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: 35.h,
+              // ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 22.0.w),
                 child: CarouselSlider(
@@ -137,6 +139,7 @@ class _HomePageState extends State<HomePage> {
                       BannerCard(imagePath: AppAssets.kHospital3),
                     ],
                     options: CarouselOptions(
+                      //autoPlay: true,
                       height: 195.h,
                       viewportFraction: 1,
                       initialPage: 0,
@@ -197,10 +200,11 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 height: 20.h,
               ),
-              
+
               CarouselSlider.builder(
                 options: CarouselOptions(
-                  height: 280.h,
+                  autoPlay: true,
+                  height: 285.h,
                   viewportFraction: 0.7,
                   initialPage: 1,
                   enableInfiniteScroll: true,
@@ -217,15 +221,10 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 height: 100.h,
               ),
-              
             ],
           ),
-          
         ),
-        
       ),
-      
-      
     );
   }
 }

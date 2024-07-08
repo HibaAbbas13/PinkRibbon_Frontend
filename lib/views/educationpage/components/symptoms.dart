@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pink_ribbon/data/app_colors.dart';
 import 'package:pink_ribbon/data/typography.dart';
-import 'package:pink_ribbon/views/widgets/custom_appbar.dart';
+import 'package:pink_ribbon/views/Components/Customappbar.dart';
+import 'package:pink_ribbon/views/educationpage/components/headrow.dart';
 import 'package:pink_ribbon/views/educationpage/components/syptoms_bullets.dart';
+
 
 class Symptoms extends StatefulWidget {
   const Symptoms({super.key});
@@ -16,7 +18,7 @@ class _SymptomsState extends State<Symptoms> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: "Education"),
+      appBar: const CustomAppBar(title: "Education",),
       body: SingleChildScrollView(
           child: Container(
         padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -38,30 +40,7 @@ class _SymptomsState extends State<Symptoms> {
             SizedBox(
               height: 45.h,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
-                  decoration: BoxDecoration(
-                    color: AppColors.kPrimary,
-                    borderRadius: BorderRadius.circular(30.r),
-                  ),
-                  child: Text(
-                    "Symptoms",
-                    style:
-                        AppTypography.kBold16.copyWith(color: AppColors.kWhite),
-                  ),
-                ),
-                InkWell(
-                    onTap: () {},
-                    child: Icon(
-                      Icons.share,
-                      color: AppColors.kPrimary,
-                    ))
-              ],
-            ),
+            educationHeadRow(title: "Symptoms", content: "Check out this information about Symptoms of Breast Cancer! \n\nhttps://pinkribbon.org.pk/signs-symptoms/"),
             SizedBox(height: 30.h),
             Text(
               "Women experience breast changes in size, texture and shape during her lifetime. Sometimes they feel pain or tenderness, especially during breastfeeding and menopause. Most of the time there is nothing to fear about these changes but sometimes these changes occur due to breast cancer. Some changes are warning signs of breast cancer and women should not ignore these signs to catch breast cancer at an early stage. Early detection of breast cancer is the key to survival because if breast cancer is diagnosed early the chances of survival are up to 90%.",

@@ -4,7 +4,6 @@ import 'package:pink_ribbon/data/app_colors.dart';
 import 'package:pink_ribbon/data/typography.dart';
 import 'package:pink_ribbon/views/Auth/Components/Validation.dart';
 
-
 class ProfileTextFormField extends StatefulWidget {
   final TextEditingController controller;
   final bool isPassword;
@@ -47,15 +46,18 @@ class _ProfileTextFormFieldState extends State<ProfileTextFormField> {
           },
           keyboardType: TextInputType.name,
           decoration: InputDecoration(
-            errorStyle: AppTypography.kLight12.copyWith(color: AppColors.kPrimary),
+            errorStyle:
+                AppTypography.kLight12.copyWith(color: AppColors.kPrimary),
             contentPadding: EdgeInsets.all(14.h),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0.r),
-              borderSide: BorderSide(color: AppColors.kAppBarGrey, width: 1.0.w),
+              borderSide:
+                  BorderSide(color: AppColors.kAppBarGrey, width: 1.0.w),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0.r),
-              borderSide: BorderSide(color: AppColors.kAppBarGrey, width: 1.0.w),
+              borderSide:
+                  BorderSide(color: AppColors.kAppBarGrey, width: 1.0.w),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0.r),
@@ -67,7 +69,6 @@ class _ProfileTextFormFieldState extends State<ProfileTextFormField> {
             ),
           ),
           style: AppTypography.kLight14.copyWith(color: AppColors.kBlack),
-          
         ),
       ],
     );

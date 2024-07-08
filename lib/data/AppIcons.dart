@@ -12,4 +12,12 @@ class AppIcons {
   static String search = 'assets/icons/search.svg';
   static String breifcase = 'assets/icons/briefcase.svg';
   static String heart = 'assets/icons/heart.svg';
+  static String whatsapp = 'assets/icons/whatsapp.svg';
+
+  static String kEducation = 'assets/icons/education.svg';
+
+  static String kWhatsapp = "assets/icons/whatsapp.svg";
+  static String kAboutUs = "assets/icons/about_us.svg";
+  static String kMission = "assets/icons/mission.svg";
+  static String kVision = "assets/icons/vision.svg";
 }

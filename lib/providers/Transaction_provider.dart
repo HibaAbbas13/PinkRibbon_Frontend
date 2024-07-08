@@ -6,7 +6,7 @@ import 'package:pink_ribbon/model/Transaction.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class TransactionProvider with ChangeNotifier {
-  final String _baseUrl = 'http://172.21.144.1:1479/api';
+  final String _baseUrl = 'https://pinkribbon-afb2f3b6e998.herokuapp.com/api';
   final _storage = FlutterSecureStorage();
 
   Future<String> getToken() async {
